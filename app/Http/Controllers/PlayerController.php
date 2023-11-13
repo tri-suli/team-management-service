@@ -18,9 +18,23 @@ class PlayerController extends Controller
         return response("Failed", 500);
     }
 
-    public function show()
+    public function show(int $id)
     {
-        return response("Failed", 500);
+        $player = Player::with('skills')->find($id);
+
+        if (! ($player instanceof Player)) {
+            return response()->json([
+                'message' => 'Entity Not Found!'
+            ], 404);
+        }
+
+        return response()->json([
+            ...$player->only(['id', 'name', 'position']),
+            'playerSkills' => $player->skills->transform(fn (PlayerSkill $playerSkill) => [
+                ...$playerSkill->only(['id', 'skill', 'value']),
+                'playerId' => $playerSkill->player_id
+            ])->toArray()
+        ]);
     }
 
     public function store(Request $request)
