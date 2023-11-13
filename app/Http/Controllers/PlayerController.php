@@ -48,8 +48,43 @@ class PlayerController extends Controller
         return response("Failed", 500);
     }
 
-    public function update()
+    public function update(Request $request, int $id)
     {
+        $name = $request->get('name');
+        $position = $request->get('position');
+        $playerSkills = $request->get('playerSkills');
+
+        $player = Player::select([
+            'id', 'name', 'position'
+        ])->with('skills')->find($id);
+
+        if ($player instanceof Player) {
+            $skills = [];
+            $player->update([
+                'name' => $name,
+                'position' => $position
+            ]);
+
+            foreach ($playerSkills as $playerSkill) {
+                list($skill, $value) = array_values($playerSkill);
+                $skill = $player->skills()->updateOrCreate(
+                    ['player_id' => $player->id, 'skill' => $skill],
+                    ['skill' => $skill, 'value' => $value, 'player_id' => $player->id]
+                );
+                $skills[] = [
+                    ...$skill->only(['id', 'skill', 'value']),
+                    'playerId' => $player->id
+                ];
+            }
+
+            return response()->json([
+                'id' => $player->id,
+                'name' => $name,
+                'position' => $position,
+                'playerSkills' => $skills
+            ]);
+        }
+
         return response("Failed", 500);
     }
 
