@@ -1,7 +1,7 @@
 <?php
 
 // /////////////////////////////////////////////////////////////////////////////
-// PLEASE DO NOT RENAME OR REMOVE ANY OF THE CODE BELOW. 
+// PLEASE DO NOT RENAME OR REMOVE ANY OF THE CODE BELOW.
 // YOU CAN ADD YOUR CODE TO THIS FILE TO EXTEND THE FEATURES TO USE THEM IN YOUR WORK.
 // /////////////////////////////////////////////////////////////////////////////
 
@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 use App\Models\PlayerSkill;
 use App\Models\Player;
 use Illuminate\Http\Request;
+
 class PlayerController extends Controller
 {
     public function index()
@@ -88,8 +89,24 @@ class PlayerController extends Controller
         return response("Failed", 500);
     }
 
-    public function destroy()
+    public function destroy(int $id)
     {
+        $player = Player::find($id);
+
+        if (! ($player instanceof Player)) {
+            return response()->json([
+                'message' => 'Entity Not Found!'
+            ], 404);
+        }
+
+        $deleted = $player->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Record deleted successfully!'
+            ]);
+        }
+
         return response("Failed", 500);
     }
 }
