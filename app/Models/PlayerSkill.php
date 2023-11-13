@@ -1,12 +1,13 @@
 <?php
 
 // /////////////////////////////////////////////////////////////////////////////
-// PLEASE DO NOT RENAME OR REMOVE ANY OF THE CODE BELOW. 
+// PLEASE DO NOT RENAME OR REMOVE ANY OF THE CODE BELOW.
 // YOU CAN ADD YOUR CODE TO THIS FILE TO EXTEND THE FEATURES TO USE THEM IN YOUR WORK.
 // /////////////////////////////////////////////////////////////////////////////
 
 namespace App\Models;
 
+use App\Casts\PlayerSkillCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,11 +22,11 @@ class PlayerSkill extends Model
 
     protected $fillable = [
         'skill',
-        'value'
+        'value',
     ];
 
     protected $casts = [
-        'skill' => \App\Enums\PlayerSkill::class
+        'skill' => PlayerSkillCast::class
     ];
 
     public function player(): BelongsTo
