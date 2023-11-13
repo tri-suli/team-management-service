@@ -15,7 +15,15 @@ class PlayerController extends Controller
 {
     public function index()
     {
-        return response("Failed", 500);
+        $players = Player::with('skills')->get();
+
+        return response()->json($players->transform(fn (Player $player) => [
+            ...$player->only(['id', 'name', 'position']),
+            'playerSkills' => $player->skills->transform(fn (PlayerSkill $playerSkill) => [
+                ...$playerSkill->only(['id', 'skill', 'value']),
+                'playerId' => $playerSkill->player_id
+            ])->toArray()
+        ]));
     }
 
     public function show(int $id)
