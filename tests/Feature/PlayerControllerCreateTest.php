@@ -33,6 +33,43 @@ class PlayerControllerCreateTest extends PlayerControllerBaseTest
         $this->assertNotNull($res);
     }
 
+    public function test_successfully_create_new_player(): void
+    {
+        $data = [
+            "name" => "Player 1",
+            "position" => "midfielder",
+            "playerSkills" => [
+                0 => [
+                    "skill" => "attack",
+                    "value" => 60
+                ],
+                1 => [
+                    "skill" => "speed",
+                    "value" => 80
+                ]
+            ]
+        ];
+
+        $response = $this->postJson(self::REQ_URI, $data);
+
+        $response
+            ->assertStatus(201)
+            ->assertJsonStructure([
+                'id',
+                'name',
+                'position',
+                'playerSkills' => [
+                    ['id', 'skill', 'value', 'playerId']
+                ]
+            ]);
+        $this->assertDatabaseHas('players', [
+            'name' => $data['name'],
+            'position' => $data['position']
+        ]);
+        $this->assertDatabaseHas('player_skills', $data['playerSkills'][0]);
+        $this->assertDatabaseHas('player_skills', $data['playerSkills'][1]);
+    }
+
     public function test_should_receive_error_message_when_name_is_empty(): void
     {
         $response = $this->postJson(self::REQ_URI, [

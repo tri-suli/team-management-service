@@ -8,14 +8,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Player\StorePlayerRequest;
+use App\Http\Resources\StorePlayerResource;
 use App\Models\PlayerSkill;
 use App\Models\Player;
-use Illuminate\Http\JsonResponse;
+use App\Repositories\PlayerRepository;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class PlayerController extends Controller
 {
+    private PlayerRepository $playerRepository;
+
+    public function __construct(PlayerRepository $playerRepository)
+    {
+        $this->playerRepository = $playerRepository;
+    }
+
     public function index()
     {
         $players = Player::with('skills')->get();
@@ -52,32 +59,20 @@ class PlayerController extends Controller
      * Handle the request to create a new player resource
      *
      * @param StorePlayerRequest $request
-     * @return Response|JsonResponse
+     * @return StorePlayerResource
      */
-    public function store(StorePlayerRequest $request): Response|JsonResponse
+    public function store(StorePlayerRequest $request): StorePlayerResource
     {
         $name = $request->get('name');
         $position = $request->get('position');
         $skills = $request->get('playerSkills');
 
-        $player = Player::create([
-            'name' => $name,
-            'position' => $position,
-        ]);
+        $player = $this->playerRepository->create($name, $position);
 
-        if ($player instanceof Player) {
-            $skills = $player->skills()->createMany($skills);
-            return response()->json([
-                'name' => $name,
-                'position' => $position,
-                'playerSkills' => $skills->transform(fn (PlayerSkill $playerSkill) => [
-                    'skill' => $playerSkill->skill,
-                    'value' => $playerSkill->value
-                ])->toArray()
-            ], 201);
-        }
+        $skills = $this->playerRepository->addSkills($player, $skills);
 
-        return response("Failed", 500);
+        return new StorePlayerResource($player, $skills);
+//        return response("Failed", 500);
     }
 
     public function update(Request $request, int $id)
