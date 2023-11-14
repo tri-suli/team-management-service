@@ -8,6 +8,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,4 +34,4 @@ Route::group(['prefix'=>'player'], function () {
     Route::middleware('auth.custom')->delete($idInThePath, [PlayerController::class, 'destroy']);
 });
 
-Route::post('team/process', []);
+Route::post('team/process', [TeamController::class, 'create']);
