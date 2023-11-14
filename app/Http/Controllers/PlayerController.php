@@ -7,9 +7,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Player\StorePlayerRequest;
 use App\Models\PlayerSkill;
 use App\Models\Player;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class PlayerController extends Controller
 {
@@ -45,7 +48,13 @@ class PlayerController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Handle the request to create a new player resource
+     *
+     * @param StorePlayerRequest $request
+     * @return Response|JsonResponse
+     */
+    public function store(StorePlayerRequest $request): Response|JsonResponse
     {
         $name = $request->get('name');
         $position = $request->get('position');
