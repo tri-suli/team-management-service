@@ -97,6 +97,23 @@ class PlayerControllerCreateTest extends PlayerControllerBaseTest
             ]);
     }
 
+    public function test_should_receive_error_message_when_player_skill_is_invalid(): void
+    {
+        $response = $this->postJson(self::REQ_URI, [
+            'name' => 'Player 1',
+            'position' => 'defender',
+            'playerSkills' => [
+                ['skill' => 'throwing', 'value' => 70],
+            ]
+        ]);
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => "Invalid value for player skill: throwing",
+            ]);
+    }
+
     public function test_should_receive_error_message_when_position_value_is_valid(): void
     {
         $response = $this->postJson(self::REQ_URI, [

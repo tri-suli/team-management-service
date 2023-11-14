@@ -21,6 +21,6 @@ class StorePlayerRequestTest extends TestCase
         $request = new StorePlayerRequest();
 
         $this->assertArrayHasKey('position', $request->rules());
-        $this->assertEquals(['required', new PlayerPositionRule()], $request->rules()['position']);
+        $this->assertEquals(['bail', 'required', new PlayerPositionRule()], $request->rules()['position']);
     }
 }
